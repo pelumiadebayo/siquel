@@ -7,17 +7,24 @@ import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
 import Card from '@material-ui/core/Card';
 import Tooltip from "@material-ui/core/Tooltip";
+import TimeInput from "./elements/TimeInput";
+import TextFieldInput from "./elements/TextField";
+import TextArea from "./elements/TextArea";
+import NumberInput from "./elements/NumberInput";
+import RadioInput from "./elements/RadioInput";
+import DateInput from "./elements/DateInput";
+
 //Icons
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 //Form Elements
-import {
-  TextFieldInput,
-  TextArea,
-  NumberInput,
-  RadioInput,
-  DateInput,
-  TimeInput,
-} from "./elements";
+// import {
+//   TextFieldInput,
+//   TextArea,
+//   NumberInput,
+//   RadioInput,
+//   DateInput,
+//   TimeInput,
+// } from "./elements";
 import { formEl } from "./constants.js";
 //Components
 import Header from "./Header";
