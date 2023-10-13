@@ -1,326 +1,145 @@
-import { Fragment, useState } from "react";
-import uuid from "react-uuid";
-import Nestable from "react-nestable";
-//Material UI Components
-import Grid from "@material-ui/core/Grid";
-import IconButton from "@material-ui/core/IconButton";
-import Button from "@material-ui/core/Button";
-import Card from '@material-ui/core/Card';
-import Tooltip from "@material-ui/core/Tooltip";
-import TimeInput from "./elements/TimeInput";
-import TextFieldInput from "./elements/TextField";
-import TextArea from "./elements/TextArea";
-import NumberInput from "./elements/NumberInput";
-import RadioInput from "./elements/RadioInput";
-import DateInput from "./elements/DateInput";
+import * as React from 'react';
+import { styled, createTheme, ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import MuiDrawer from '@material-ui/core/Drawer';
+import Box from '@material-ui/core/Box';
+import MuiAppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import List from '@material-ui/core/List';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import Badge from '@material-ui/core/Badge';
+import Link from '@material-ui/core/Link';
+import MenuIcon from '@material-ui/icons/Menu';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import { mainListItems, secondaryListItems } from './listItems';
 
-//Icons
-import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
-//Form Elements
-// import {
-//   TextFieldInput,
-//   TextArea,
-//   NumberInput,
-//   RadioInput,
-//   DateInput,
-//   TimeInput,
-// } from "./elements";
-import { formEl } from "./constants.js";
-//Components
-import Header from "./Header";
 
-const FormBuilder = () => {
-  const initVal = formEl[0]?.value;
+// function Copyright(props) {
+//   return (
+//     <Typography variant="body2" color="text.secondary" align="center" {...props}>
+//       {'Copyright © '}
+//       <Link color="inherit" href="https://mui.com/">
+//         Your Website
+//       </Link>{' '}
+//       {new Date().getFullYear()}
+//       {'.'}
+//     </Typography>
+//   );
+// }
 
-  //State
-  const [title, setTitle] = useState("Untitled Form");
-  const [description, setDescription] = useState("");
-  const [data, setData] = useState([]);
-  const [formData, setFormData] = useState("text");
+const drawerWidth = 240;
 
-  const items = data;
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
 
-  
-  //Function to add new element
-  const addElement = (type) => {   
-    const data = {
-      id: uuid(),
-      value: null,
-      type: type,
-      required: false,
-    };
-    setData((prevState) => [...prevState, data]);
-    setFormData(initVal);
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme, open }) => ({
+    '& .MuiDrawer-paper': {
+      position: 'absolute',
+      whiteSpace: 'nowrap',
+      width: drawerWidth,
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      boxSizing: 'border-box',
+      ...(!open && {
+        overflowX: 'hidden',
+        transition: theme.transitions.create('width', {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.leavingScreen,
+        }),
+        width: theme.spacing(7),
+        [theme.breakpoints.up('sm')]: {
+          width: theme.spacing(9),
+        },
+      }),
+    },
+  }),
+);
+
+export default function Dashboard() {
+  const [open, setOpen] = React.useState(true);
+  const toggleDrawer = () => {
+    setOpen(!open);
   };
-
-  //Function to add new element
-  const addElement2 = () => {
-    const data = {
-      id: uuid(),
-      value: null,
-      type: formData,
-      required: false,
-    };
-    setData((prevState) => [...prevState, data]);
-    setFormData(initVal);
-  };
-
-  //Function to delete element
-  const deleteEl = (id) => {
-    setData((prevState) => prevState.filter((val) => val.id !== id));
-  };
-
-  //Function to add element at specific pos and return arr
-  const addAfter = (elArray, index, newEl) => {
-    return [...elArray.slice(0, index+1), newEl, ...elArray.slice(index+1)];
-  };
-
-  //Function to duplicate element
-  const duplicateElement = (elId, elType) => {
-    let elIdx = data.findIndex( (el) =>el.id === elId);
-    let newEl = {
-      id: uuid(),
-      value: null,
-      type: elType,
-      required: false,
-    }
-    let newArr = addAfter(data,elIdx,newEl)
-    setData(newArr)
-  };
-
-  //Function to handle sorting of elements
-  const handleOnChangeSort = ({ items }) => {
-    setData(items);
-  };
-
-  //Function to Handle Input Values
-  const handleValue = (id, e) => {
-    let newArr = data.map((el) => {
-      if (el.id == id) {
-        return { ...el, value: e.target.value };
-      } else {
-        return el;
-      }
-    });
-    setData(newArr);
-  };
-
-  //Function to Handle Required
-  const handleRequired = (id) => {
-    let newArr = data.map((el) => {
-      if (el.id == id) {
-        return { ...el, required: !el.required };
-      } else {
-        return el;
-      }
-    });
-    setData(newArr);
-  };
-
-  //Function to Handle Element Type
-  const handleElType = (id, type) => {
-    let newArr = data.map((el) => {
-      if (el.id == id) {
-        return { ...el, type: type };
-      } else {
-        return el;
-      }
-    });
-    setData(newArr);
-  };
-
-  //Function to Handle Options
-  const addOption = (id, newOption) => {
-    let newArr = data.map((el) => {
-      if (el.id == id) {
-        const objVal = "options" in el ? el?.options : [];
-        return { ...el, options: [...objVal, newOption] };
-      } else {
-        return el;
-      }
-    });
-    setData(newArr);
-  };
-
-  //Function to Handle Date
-  const handleDate = (id, dateVal) => {
-    let newArr = data.map((el) => {
-      if (el.id == id) {
-        return { ...el, date: dateVal };
-      } else {
-        return el;
-      }
-    });
-    setData(newArr);
-  };
-
-  //Function to Handle Time
-  const handleTime = (id, dateVal) => {
-    let newArr = data.map((el) => {
-      if (el.id == id) {
-        return { ...el, time: dateVal };
-      } else {
-        return el;
-      }
-    });
-    setData(newArr);
-  };
-
-  //Function to Change Option Values
-  const handleOptionValues = (elId, optionId, optionVal) => {
-    let newArr = data.map((el) => {
-      if (el.id == elId) {
-        el?.options &&
-          el?.options.map((opt) => {
-            if (opt.id == optionId) {
-              opt.value = optionVal;
-            }
-          });
-        return el;
-      } else {
-        return el;
-      }
-    });
-    setData(newArr);
-  };
-
-  //Function to Delete Optin
-  const deleteOption = (elId, optionId) => {
-    let newArr = data.map((el) => {
-      if (el.id == elId) {
-        let newOptions =
-          el?.options && el?.options.filter((opt) => opt.id != optionId);
-        return { ...el, options: newOptions };
-      } else {
-        return el;
-      }
-    });
-    setData(newArr);
-  };
-
-  //Render items
-  const renderElements = ({ item }) => {
-    switch (item.type) {
-      case "text":
-        return (
-          <TextFieldInput
-            item={item}
-            handleValue={handleValue}
-            deleteEl={deleteEl}
-            handleRequired={handleRequired}
-            handleElType={handleElType}
-            duplicateElement={duplicateElement}
-          />
-        );
-      case "textarea":
-        return (
-          <TextArea
-            item={item}
-            handleValue={handleValue}
-            deleteEl={deleteEl}
-            handleRequired={handleRequired}
-            handleElType={handleElType}
-            duplicateElement={duplicateElement}
-          />
-        );
-      case "number":
-        return (
-          <NumberInput
-            item={item}
-            handleValue={handleValue}
-            deleteEl={deleteEl}
-            handleRequired={handleRequired}
-            handleElType={handleElType}
-            duplicateElement={duplicateElement}
-          />
-        );
-      case "radio":
-        return (
-          <RadioInput
-            item={item}
-            handleValue={handleValue}
-            deleteEl={deleteEl}
-            handleRequired={handleRequired}
-            handleElType={handleElType}
-            addOption={addOption}
-            handleOptionValues={handleOptionValues}
-            deleteOption={deleteOption}
-            duplicateElement={duplicateElement}
-          />
-        );
-      case "date":
-        return (
-          <DateInput
-            item={item}
-            handleValue={handleValue}
-            deleteEl={deleteEl}
-            handleRequired={handleRequired}
-            handleElType={handleElType}
-            handleDate={handleDate}
-            duplicateElement={duplicateElement}
-          />
-        );
-      case "time":
-        return (
-          <TimeInput
-            item={item}
-            handleValue={handleValue}
-            deleteEl={deleteEl}
-            handleRequired={handleRequired}
-            handleElType={handleElType}
-            handleTime={handleTime}
-            duplicateElement={duplicateElement}
-          />
-        );
-      default:
-        return <Fragment></Fragment>;
-    }
-  };
-
-  console.log(data);
 
   return (
-    <Fragment>
-      <Grid container spacing={1} direction="row" justifyContent="center">
-        <Grid item md={6}>
-          <Header
-            title={title}
-            setTitle={setTitle}
-            description={description}
-            setDescription={setDescription}
-          />
-          <Nestable
-            items={items}
-            renderItem={renderElements}
-            maxDepth={1}
-            onChange={handleOnChangeSort}
-          />
-        </Grid>
-        <Grid item md={1}>
-          {/* <Tooltip title="Add Element" aria-label="add-element">
+    <ThemeProvider >
+        <CssBaseline />
+        <AppBar position="absolute" open={open}>
+          <Toolbar
+            sx={{
+              pr: '24px', // keep right padding when drawer closed
+            }}
+          >
             <IconButton
-              aria-label="add-element"
-              onClick={addElement2}
-              sx={{ position: "sticky", top: 30 }}
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={toggleDrawer}
+              sx={{
+                marginRight: '36px',
+                ...(open && { display: 'none' }),
+              }}
             >
-              <AddCircleOutlineOutlinedIcon color="secondary" />
+              <MenuIcon />
             </IconButton>
-          </Tooltip> */}
-          <Card
-          sx={{ position: "sticky", top: 30 }}
-           >
-          {formEl &&
-                    formEl.map((el, key) => (
-                      <Button size="small" key={key} value={el.value} onClick={(e) => addElement(e.target.value)}
-                      >
-                        {el.label}
-                      </Button>
-                    ))}
-
-          </Card>
-        </Grid>
-      </Grid>
-    </Fragment>
+            <Typography
+              component="h1"
+              variant="h6"
+              color="inherit"
+              noWrap
+              sx={{ flexGrow: 1 }}
+            >
+              Dashboard
+            </Typography>
+            <IconButton color="inherit">
+              <Badge badgeContent={4} color="secondary">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+        <Drawer variant="permanent" open={open}>
+          <Toolbar
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              px: [1],
+            }}
+          >
+            <IconButton onClick={toggleDrawer}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </Toolbar>
+          <Divider />
+          <List component="nav">
+            {mainListItems}
+            <Divider sx={{ my: 1 }} />
+            {secondaryListItems}
+          </List>
+        </Drawer>
+       
+    </ThemeProvider>
   );
-};
-export default FormBuilder;
+}

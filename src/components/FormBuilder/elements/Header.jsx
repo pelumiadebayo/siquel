@@ -7,7 +7,6 @@ const Header = ({ title, description, setTitle, setDescription }) => {
   return (
     <Fragment>
       <Box sx={{ mb: 3 }}>
-        <Paper elevation={2} sx={{ p: 3, borderTop: "8px solid #9C27B0" }}>
           <TextField
             defaultValue={title}
             onBlur={(e) => setTitle(e.target.value)}
@@ -28,7 +27,6 @@ const Header = ({ title, description, setTitle, setDescription }) => {
             multiline
             rows={2}
           />
-        </Paper>
       </Box>
     </Fragment>
   );
